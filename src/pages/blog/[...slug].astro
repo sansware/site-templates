@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { site } from "../../site.config";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  author: { "@type": "Organization", name: post.data.author },
+  publisher: { "@type": "Organization", name: site.name },
+};
+---
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  path={`blog/${post.id}/`}
+  ogType="article"
+  jsonld={jsonld}
+>
+  <article class="article">
+    <p class="article-meta">{fmt(post.data.date)} &middot; {post.data.author}</p>
+    <h1>{post.data.title}</h1>
+    <div class="prose"><Content /></div>
+    <a class="article-back" href="/blog/">&larr; All articles</a>
+  </article>
+</Base>

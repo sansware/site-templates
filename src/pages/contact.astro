@@ -1,0 +1,104 @@
+---
+/* Config-driven Contact page with an upgraded enquiry form. */
+import Base from "../layouts/Base.astro";
+import { site } from "../site.config";
+
+const { name, phone, phoneE164, email, address, hours } = site as any;
+const c: any = (site as any).contact ?? {};
+const hasAddr = address && address.street;
+const mapQuery = hasAddr
+  ? encodeURIComponent(`${address.street}, ${address.locality} ${address.postcode}`)
+  : "";
+const intro: string = c.intro ??
+  `Get in touch with ${name} — tell us what you need and we'll come straight back to you.`;
+---
+<Base title={`Contact — ${name}`} description={intro} path="contact/">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <h1>{c.heading ?? "Get in touch"}</h1>
+      <p>{intro}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap contact-page-grid">
+      <div class="contact-details" data-reveal>
+        <h2>How to reach us</h2>
+        {phone && (
+          <a class="contact-row" href={`tel:${phoneE164}`}>
+            <span class="contact-row-ico" aria-hidden="true">&#9742;</span>
+            <span><strong>Phone</strong>{phone}</span>
+          </a>
+        )}
+        {email && (
+          <a class="contact-row" href={`mailto:${email}`}>
+            <span class="contact-row-ico" aria-hidden="true">&#9993;</span>
+            <span><strong>Email</strong>{email}</span>
+          </a>
+        )}
+        {hasAddr && (
+          <a class="contact-row" href={`https://maps.google.com/?q=${mapQuery}`} target="_blank" rel="noopener">
+            <span class="contact-row-ico" aria-hidden="true">&#9873;</span>
+            <span><strong>Visit</strong>{address.street}, {address.locality}{address.postcode ? `, ${address.postcode}` : ""}</span>
+          </a>
+        )}
+        {hours && hours.length > 0 && (
+          <div class="contact-hours">
+            <h3>Opening hours</h3>
+            <ul>
+              {hours.map((h: any) => <li><span>{h.day}</span><strong>{h.time}</strong></li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <form class="form contact-form" data-form action="https://formspree.io/f/your-form-id" method="POST" data-reveal>
+        <h2>Send us a message</h2>
+        <div class="field"><label for="c-name">Your name</label><input id="c-name" name="name" type="text" autocomplete="name" required /></div>
+        <div class="field-row">
+          <div class="field"><label for="c-phone">Phone</label><input id="c-phone" name="phone" type="tel" autocomplete="tel" required /></div>
+          <div class="field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" autocomplete="email" /></div>
+        </div>
+        <div class="field"><label for="c-subject">Subject</label><input id="c-subject" name="subject" type="text" placeholder="What's it about?" /></div>
+        <div class="field"><label for="c-message">Message</label><textarea id="c-message" name="message" rows="5" required placeholder="Tell us what you need…"></textarea></div>
+        <button class="btn btn-primary btn-block btn-lg" type="submit">Send message</button>
+        <p class="form-msg" data-form-msg role="status"></p>
+        <p class="form-fine">We usually reply the same day.</p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    const form = document.querySelector("[data-form]") as HTMLFormElement | null;
+    const msg = document.querySelector("[data-form-msg]");
+    form?.addEventListener("submit", (e) => {
+      if (form.getAttribute("action")?.includes("your-form-id")) {
+        e.preventDefault();
+        if (msg) { msg.textContent = "Form not connected yet — add a Formspree ID to go live."; msg.className = "form-msg err"; }
+        return;
+      }
+      if (msg) { msg.textContent = "Sending your message…"; msg.className = "form-msg"; }
+    });
+  </script>
+
+  <style>
+    .contact-page-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 44px; align-items: start; }
+    .contact-details h2, .contact-form h2 { font-size: 1.35rem; margin-bottom: 18px; }
+    .contact-row { display: flex; gap: 14px; align-items: center; padding: 16px 18px; margin-bottom: 12px; background: #fff; border: 1px solid var(--line, #e6e6ea); border-radius: 12px; text-decoration: none; color: var(--ink); transition: border-color .2s, transform .2s var(--ease); }
+    .contact-row:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .contact-row-ico { width: 42px; height: 42px; flex: none; border-radius: 10px; background: color-mix(in srgb, var(--accent) 14%, #fff); color: var(--accent-dark); display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .contact-row span:last-child { display: flex; flex-direction: column; font-size: .98rem; }
+    .contact-row strong { font-family: var(--display); font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-dark); }
+    .contact-hours { margin-top: 22px; background: var(--ink); color: #fff; border-radius: 12px; padding: 22px 24px; }
+    .contact-hours h3 { color: #fff; font-size: 1.05rem; margin-bottom: 10px; }
+    .contact-hours ul { list-style: none; padding: 0; margin: 0; }
+    .contact-hours li { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.12); font-size: .92rem; }
+    .contact-hours li:last-child { border-bottom: none; }
+    .contact-hours strong { color: var(--accent-glow); }
+    .contact-form { background: #fff; border: 1px solid var(--line, #e6e6ea); border-radius: var(--radius-lg); padding: 32px 34px; box-shadow: var(--shadow); }
+    @media (max-width: 900px) {
+      .contact-page-grid { grid-template-columns: 1fr; gap: 28px; }
+    }
+  </style>
+</Base>

@@ -1,0 +1,53 @@
+---
+import { site } from "../site.config";
+const { name, intro, phoneE164, phone, email, address, hours, nav } = site;
+const year = new Date().getFullYear();
+const cta = (site as any).ctaBand ?? {
+  eyebrow: "Get in touch",
+  heading: `Ready to get started with ${name}?`,
+  label: "Get in touch",
+};
+const megaLinks = nav.filter((n) => "mega" in n && (n as any).mega);
+const quickLinks = nav.filter((n) => !("mega" in n) || !(n as any).mega);
+const hasAddr = address && address.street;
+---
+<section class="cta-band">
+  <div class="wrap cta-band-in">
+    <div>
+      <p class="cta-band-eyebrow">{cta.eyebrow}</p>
+      <h2>{cta.heading}</h2>
+    </div>
+    <a class="btn btn-light btn-lg" href="/contact">{cta.label}</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-cols">
+    <div class="footer-brand">
+      <span class="brand-name">{name}</span>
+      <p>{intro}</p>
+      {phone && <a class="footer-call" href={`tel:${phoneE164}`}>{phone}</a>}
+    </div>
+    <nav class="footer-col" aria-label="What we do">
+      <h3>What we do</h3>
+      {megaLinks.map((n) => <a href={n.href}>{n.label}</a>)}
+      <a href="/blog">Blog</a>
+    </nav>
+    <nav class="footer-col" aria-label="Explore">
+      <h3>Explore</h3>
+      {quickLinks.map((n) => <a href={n.href}>{n.label}</a>)}
+    </nav>
+    <div class="footer-col">
+      <h3>Visit &amp; hours</h3>
+      <ul class="footer-hours">
+        {hours.map((h) => <li><span>{h.day}</span><strong>{h.time}</strong></li>)}
+      </ul>
+      {hasAddr && <p class="footer-addr">{address.street}<br />{address.locality}, {address.postcode}</p>}
+      {email && <a href={`mailto:${email}`}>{email}</a>}
+    </div>
+  </div>
+  <div class="wrap footer-base">
+    <p>&copy; {year} {name}. All rights reserved.</p>
+    <p>{address?.locality ? address.locality + " · " : ""}Built with the <a href="https://github.com/sansware/site-templates">site-templates</a> starter</p>
+  </div>
+</footer>

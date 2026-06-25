@@ -1,0 +1,230 @@
+---
+/* Trade-neutral services index — service grid, why, how, areas, blog,
+   contact. Config-driven; abstract glass hero works for any trade. */
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { site } from "../site.config";
+
+const s: any = site;
+const { name, phone, phoneE164, email, address, intro, hero, trust, services, why, how } = s;
+const areas: string[] = s.areas ?? [];
+
+const posts = (await getCollection("blog"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+const jsonld: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": s.schemaType,
+  name,
+  description: intro,
+  url: s.url,
+};
+if (phoneE164) jsonld.telephone = phoneE164;
+if (email) jsonld.email = email;
+if (address && address.street) jsonld.address = {
+  "@type": "PostalAddress",
+  streetAddress: address.street,
+  addressLocality: address.locality,
+  postalCode: address.postcode,
+  addressCountry: "GB",
+};
+if (areas.length) jsonld.areaServed = areas;
+---
+<Base title={`${name} — ${s.tagline}`} description={intro} jsonld={jsonld}>
+  <section class="hero hero--trade">
+    <span class="bolt-glow" aria-hidden="true"></span>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="hero-eyebrow">{hero.eyebrow}</p>
+        <h1>{hero.h1}</h1>
+        <p class="hero-lede">{hero.lede}</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary btn-lg" href="/contact">{s.ctaBand.label}</a>
+          {phone && <a class="btn btn-line btn-lg" href={`tel:${phoneE164}`}><span aria-hidden="true">&#9742;</span> Call {phone}</a>}
+        </div>
+        <ul class="hero-proof">
+          {trust.map((t: any) => <li><strong>{t.strong}</strong><span>{t.label}</span></li>)}
+        </ul>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="glass-stack">
+          <div class="pane pane-1"><div class="pane-grid"></div></div>
+          <div class="pane pane-2"></div>
+          <div class="pane pane-3"></div>
+        </div>
+        {trust[0] && (
+          <div class="hero-badge">
+            <strong>{trust[0].strong}</strong>
+            <span>{trust[0].label}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="trustbar" aria-label={`Why ${name}`}>
+    <div class="wrap trustbar-grid">
+      {trust.map((t: any) => (
+        <div class="trustbar-item"><strong>{t.strong}</strong><span>{t.label}</span></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">What we do</p>
+        <h2>{s.servicesHeading}</h2>
+        <p class="sec-sub">{s.servicesSub}</p>
+      </div>
+      <div class="svc-grid">
+        {services.map((sv: any) => (
+          <article class="svc-card" data-reveal>
+            <span class="svc-ico" aria-hidden="true">{sv.ico}</span>
+            <h3>{sv.title}</h3>
+            <p>{sv.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark" id="why">
+    <div class="wrap why-grid">
+      <div class="why-copy" data-reveal>
+        <p class="eyebrow eyebrow-light">Why {name}</p>
+        <h2>{s.whyHeading}</h2>
+        <p>{s.whyText}</p>
+        <a class="btn btn-primary" href="/contact">{s.ctaBand.label}</a>
+      </div>
+      <ul class="why-points" data-reveal>
+        {why.map((w: any) => (
+          <li><span class="why-ico" aria-hidden="true">✓</span><div><strong>{w.title}</strong><p>{w.text}</p></div></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">How it works</p>
+        <h2>{s.howHeading}</h2>
+      </div>
+      <ol class="steps steps--3">
+        {how.map((st: any, i: number) => (
+          <li class="step step--num" data-reveal>
+            <span class="step-no">{i + 1}</span>
+            <h3>{st.title}</h3>
+            <p>{st.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {areas.length > 0 && (
+    <section class="section section-tint" id="areas">
+      <div class="wrap areas-grid">
+        <div data-reveal>
+          <p class="eyebrow">Where we work</p>
+          <h2>{s.areasHeading}</h2>
+          <p class="sec-sub">{s.areasSub} Not sure if you're in reach? <a href="/contact">Just ask</a>.</p>
+        </div>
+        <ul class="areas-list" data-reveal>
+          {areas.map((a) => <li>{a}</li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {posts.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Advice & guides</p>
+          <h2>{s.blogHeading}</h2>
+        </div>
+        <div class="posts-grid">
+          {posts.map((post) => (
+            <article class="post-card" data-reveal>
+              <a class="post-thumb" href={`/blog/${post.id}/`} aria-label={post.data.title}></a>
+              <div class="post-body">
+                <p class="post-meta">{fmt(post.data.date)}</p>
+                <h3><a href={`/blog/${post.id}/`} style="text-decoration:none;color:inherit">{post.data.title}</a></h3>
+                <p>{post.data.description}</p>
+                <a class="post-more" href={`/blog/${post.id}/`}>Read article &rarr;</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section-dark" id="contact">
+    <div class="wrap contact-cta">
+      <div data-reveal>
+        <p class="eyebrow eyebrow-light">Get in touch</p>
+        <h2>{s.contact.heading}</h2>
+        <p>{s.contact.intro}</p>
+      </div>
+      <div class="contact-cta-actions" data-reveal>
+        {phone && <a class="btn btn-primary btn-lg" href={`tel:${phoneE164}`}>Call {phone}</a>}
+        <a class="btn btn-line btn-lg" href="/contact">Send an enquiry</a>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .hero--trade { background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, #14161c) 0%, #14161c 60%, #0a0b0f 100%); color: #e4e6ec; }
+    .hero--trade h1 { color: #fff; }
+    .hero--trade .hero-lede { color: #a8acb8; }
+    .hero--trade .hero-eyebrow { color: var(--accent-glow); }
+    .bolt-glow { position: absolute; bottom: -120px; right: -60px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, var(--accent), transparent 70%); opacity: .3; pointer-events: none; }
+    .hero-proof li strong { color: var(--accent-glow); }
+    .hero-proof li span { color: #888d9a; }
+
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .svc-card { background: #fff; border: 1px solid var(--line, #e6e6ea); border-radius: var(--radius-lg); padding: 28px 26px; box-shadow: var(--shadow); transition: transform .2s var(--ease); border-bottom: 3px solid var(--accent); }
+    .svc-card:hover { transform: translateY(-4px); }
+    .svc-ico { display: inline-block; font-size: 1.9rem; margin-bottom: 10px; }
+    .svc-card h3 { font-size: 1.16rem; margin-bottom: 6px; }
+    .svc-card p { font-size: .93rem; color: var(--soft); margin: 0; }
+
+    .why-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: start; }
+    .why-grid h2 { color: #fff; }
+    .why-grid p { color: #a8acb8; }
+    .why-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
+    .why-points li { display: grid; grid-template-columns: 30px 1fr; gap: 16px; padding: 18px 22px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; }
+    .why-ico { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #0a0b0f; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; }
+    .why-points strong { display: block; color: #fff; font-family: var(--display); font-size: 1.08rem; margin-bottom: 4px; }
+    .why-points p { font-size: .94rem; margin: 0; color: #888d9a; }
+
+    .steps--3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; list-style: none; padding: 0; }
+    .step--num { position: relative; background: #fff; border: 1px solid var(--line, #e6e6ea); border-radius: var(--radius-lg); padding: 36px 26px 22px; box-shadow: var(--shadow); text-align: center; }
+    .step-no { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 46px; height: 46px; border-radius: 50%; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 1.1rem; box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+    .step--num h3 { font-size: 1.15rem; margin: 6px 0 6px; }
+    .step--num p { font-size: .96rem; color: var(--soft); margin: 0; }
+
+    .areas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .areas-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .areas-list li { padding: 14px 18px; background: #fff; border-radius: 10px; border-left: 3px solid var(--accent); font-family: var(--display); font-weight: 600; }
+
+    .contact-cta { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
+    .contact-cta h2 { color: #fff; }
+    .contact-cta p { color: #a8acb8; }
+    .contact-cta-actions { display: flex; flex-direction: column; gap: 12px; }
+
+    @media (max-width: 1000px) {
+      .why-grid, .areas-grid { grid-template-columns: 1fr; gap: 30px; }
+      .svc-grid { grid-template-columns: 1fr 1fr; }
+      .steps--3 { grid-template-columns: 1fr; }
+      .contact-cta { grid-template-columns: 1fr; gap: 24px; }
+    }
+    @media (max-width: 640px) { .svc-grid, .areas-list { grid-template-columns: 1fr; } }
+  </style>
+</Base>

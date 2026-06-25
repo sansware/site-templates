@@ -1,0 +1,39 @@
+---
+import "../styles/global.css";
+import { site } from "../site.config";
+import Seo from "../components/Seo.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  ogType?: string;
+  jsonld?: Record<string, unknown>;
+}
+const { title, description, path, ogType, jsonld } = Astro.props;
+const b = site.brand;
+const brandVars = `--accent:${b.accent};--accent-dark:${b.accentDark};--accent-glow:${b.accentGlow};--ink:${b.ink};`;
+---
+<!doctype html>
+<html lang="en-GB" style={brandVars}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content={b.ink} />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
+  <Seo title={title} description={description} path={path} ogType={ogType} jsonld={jsonld} />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <Header />
+  <main id="main"><slot /></main>
+  <Footer />
+</body>
+</html>

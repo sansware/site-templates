@@ -1,0 +1,29 @@
+---
+import { site } from "../site.config";
+
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  ogType?: string;
+  jsonld?: Record<string, unknown>;
+}
+const { title, description, path = "", ogType = "website", jsonld } = Astro.props;
+const base = Astro.site ?? new URL(site.url);
+const canonical = new URL(path, base).href;
+const fullTitle = title.includes(site.name) ? title : `${title} — ${site.name}`;
+---
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content="en_GB" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+{jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}

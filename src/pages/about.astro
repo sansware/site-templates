@@ -1,0 +1,80 @@
+---
+/* Config-driven About page. Reads site.about; falls back to site.intro. */
+import Base from "../layouts/Base.astro";
+import { site } from "../site.config";
+
+const a: any = (site as any).about ?? {};
+const lead: string = a.lead ?? site.intro;
+const story: string[] = a.story ?? [site.intro];
+const values: { title: string; text: string }[] = a.values ?? [];
+const trust: { strong: string; label: string }[] = (site as any).trust ?? [];
+const heading: string = a.heading ?? `About ${site.name}`;
+---
+<Base title={`About — ${site.name}`} description={lead} path="about/">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">About us</p>
+      <h1>{heading}</h1>
+      <p>{lead}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap about-layout">
+      <div class="about-story" data-reveal>
+        {story.map((p) => <p>{p}</p>)}
+        <a class="btn btn-primary" href="/contact">Get in touch</a>
+      </div>
+      {trust.length > 0 && (
+        <aside class="about-aside" data-reveal>
+          <h2>At a glance</h2>
+          <ul>
+            {trust.map((t) => (
+              <li><strong>{t.strong}</strong><span>{t.label}</span></li>
+            ))}
+          </ul>
+        </aside>
+      )}
+    </div>
+  </section>
+
+  {values.length > 0 && (
+    <section class="section section-tint">
+      <div class="wrap">
+        <div class="sec-head center">
+          <p class="eyebrow">What we stand for</p>
+          <h2>{a.valuesHeading ?? "How we work"}</h2>
+        </div>
+        <div class="values-grid">
+          {values.map((v) => (
+            <article class="value-card" data-reveal>
+              <h3>{v.title}</h3>
+              <p>{v.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <style>
+    .about-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px; align-items: start; }
+    .about-story p { font-size: 1.05rem; line-height: 1.75; margin-bottom: 16px; color: var(--soft); }
+    .about-story .btn { margin-top: 10px; }
+    .about-aside { background: var(--ink); color: #fff; border-radius: var(--radius-lg); padding: 30px 32px; box-shadow: var(--shadow-lg); }
+    .about-aside h2 { color: #fff; font-size: 1.2rem; margin-bottom: 16px; }
+    .about-aside ul { list-style: none; padding: 0; margin: 0; }
+    .about-aside li { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .about-aside li:last-child { border-bottom: none; }
+    .about-aside strong { display: block; font-family: var(--display); font-size: 1.3rem; color: var(--accent-glow); }
+    .about-aside span { font-size: .92rem; opacity: .75; }
+    .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .value-card { background: #fff; border: 1px solid var(--line, #e6e6ea); border-top: 4px solid var(--accent); border-radius: var(--radius-lg); padding: 26px 26px 28px; box-shadow: var(--shadow); }
+    .value-card h3 { font-size: 1.15rem; margin-bottom: 6px; }
+    .value-card p { font-size: .95rem; color: var(--soft); margin: 0; }
+    @media (max-width: 900px) {
+      .about-layout { grid-template-columns: 1fr; gap: 28px; }
+      .values-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</Base>

@@ -1,0 +1,37 @@
+---
+import { site } from "../site.config";
+const { hero, phone, phoneE164, trust } = site;
+---
+<section class="hero">
+  <span class="hero-orb hero-orb-1" aria-hidden="true"></span>
+  <span class="hero-orb hero-orb-2" aria-hidden="true"></span>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="hero-eyebrow">{hero.eyebrow}</p>
+      <h1>{hero.h1}</h1>
+      <p class="hero-lede">{hero.lede}</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary btn-lg" href="/contact">Get in touch</a>
+        <a class="btn btn-line btn-lg" href={`tel:${phoneE164}`}>Call {phone}</a>
+      </div>
+      <ul class="hero-proof">
+        {trust.map((t) => (
+          <li><strong>{t.strong}</strong><span>{t.label}</span></li>
+        ))}
+      </ul>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="glass-stack">
+        <div class="pane pane-1"><span class="pane-grid"></span></div>
+        <div class="pane pane-2"><span class="pane-grid"></span></div>
+        <div class="pane pane-3"></div>
+      </div>
+      {trust[0] && (
+        <div class="hero-badge">
+          <strong>{trust[0].strong}</strong>
+          <span>{trust[0].label}</span>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

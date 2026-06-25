@@ -1,0 +1,91 @@
+---
+import { site } from "../site.config";
+const { nav, name, phone, phoneE164 } = site;
+---
+<header class="site-header">
+  <div class="wrap header-in">
+    <a class="brand" href="/" aria-label={`${name} home`}>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2.4"/><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2.4"/></svg>
+      </span>
+      <span class="brand-name">{name}</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {nav.map((item) => (
+        <div class="nav-item">
+          <a class="nav-link" href={item.href}>
+            {item.label}
+            {item.mega && <span class="nav-caret" aria-hidden="true"></span>}
+          </a>
+          {item.mega && (
+            <div class="mega" role="menu">
+              {item.mega.map((group) => (
+                <div class="mega-group">
+                  <h3>{group.heading}</h3>
+                  {group.links.map((link) => (
+                    <a class="mega-link" href={link.href}>{link.label}</a>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
+
+    <a class="btn btn-primary header-cta" href="/contact">Get in touch</a>
+
+    <button class="burger" type="button" data-burger aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" data-mobile-menu aria-label="Mobile navigation">
+  <div class="mm-top">
+    <span class="brand-name">{name}</span>
+    <button class="mm-close" type="button" data-close aria-label="Close menu">&#10005;</button>
+  </div>
+  <ul class="mm-list">
+    {nav.map((item) => (
+      <li>
+        {item.mega ? (
+          <div class="mm-acc">
+            <button class="mm-acc-btn" type="button" data-acc aria-expanded="false">
+              {item.label}<span class="nav-caret" aria-hidden="true"></span>
+            </button>
+            <div class="mm-acc-panel">
+              {item.mega.flatMap((group) => group.links).map((link) => (
+                <a href={link.href}>{link.label}</a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <a href={item.href}>{item.label}</a>
+        )}
+      </li>
+    ))}
+  </ul>
+  <a class="btn btn-primary btn-block mm-cta" href="/contact">Get in touch</a>
+  <a class="mm-call" href={`tel:${phoneE164}`}>Call {phone}</a>
+</div>
+
+<script>
+  const body = document.body;
+  const burger = document.querySelector("[data-burger]");
+  const closeBtn = document.querySelector("[data-close]");
+  const openMenu = () => { body.classList.add("menu-open"); burger?.setAttribute("aria-expanded", "true"); };
+  const closeMenu = () => { body.classList.remove("menu-open"); burger?.setAttribute("aria-expanded", "false"); };
+  burger?.addEventListener("click", openMenu);
+  closeBtn?.addEventListener("click", closeMenu);
+  document.querySelectorAll("[data-mobile-menu] a").forEach((a) => a.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+  document.querySelectorAll("[data-acc]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const acc = btn.parentElement;
+      const open = acc?.classList.toggle("open");
+      btn.setAttribute("aria-expanded", String(!!open));
+    });
+  });
+</script>

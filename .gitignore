@@ -1,0 +1,16 @@
+# build output
+dist/
+# dependencies
+node_modules/
+# astro
+.astro/
+# env
+.env
+.env.*
+!.env.example
+# vercel / cloudflare
+.vercel
+.wrangler
+# os
+.DS_Store
+*.log
