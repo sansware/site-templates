@@ -3,6 +3,25 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "description": "Astro starter used by UK Web Marketing for £49-£695 client tier sites. Self-hosted fonts, EU-sovereign, ships with sitemap + robots + analytics-free defaults.",
+  "license": "MIT",
+  "author": "Jordan Gilbert <jordan@sansware.tech>",
+  "homepage": "https://ukwebmarketing.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sansware/site-templates"
+  },
+  "bugs": {
+    "url": "https://github.com/sansware/site-templates/issues"
+  },
+  "keywords": [
+    "astro",
+    "starter",
+    "template",
+    "small-business",
+    "uk",
+    "marketing"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

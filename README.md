@@ -80,6 +80,8 @@ export default defineConfig({
 
 This drives the sitemap and every canonical URL. Get it right before deploying.
 
+> The build refuses to ship if `site` is still `https://example.com`. You can either edit the default or pass `SITE=https://your-client-domain.co.uk pnpm build` in CI.
+
 ### 3. `public/favicon.svg` — favicon
 
 Replace the placeholder with a 64×64 SVG that matches the brand. Inline SVG is fastest; keep it under 1KB.
@@ -182,6 +184,8 @@ Both work. Cloudflare Pages has the more generous free tier; Vercel has better p
 
 MIT. Use it for client work, fork it, sell sites built on top of it — no attribution required (a link in the footer is appreciated but not demanded).
 
-## Credit
+## Maintainer
 
-Built and maintained by [sansware](https://github.com/sansware). The same template I use day-to-day for production small-business sites. If you find a bug or want a feature, open an issue or PR.
+Built and maintained by **Jordan Gilbert** ([@sansware](https://github.com/sansware)) — founder of [UK Web Marketing](https://ukwebmarketing.com). Twenty-plus years building websites, since primary school in 2006. This is the same template I use day-to-day for production small-business sites across the £49–£695 client tier.
+
+If you find a bug or want a feature, open an issue or PR. Security issues — see [SECURITY.md](./SECURITY.md).
